@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RepoHealth AI - Smart GitHub Repository Assessment</title>
+    <meta name="description" content="Analyze, compare, and explain GitHub repository health, sustainability, and development metrics using Machine Learning.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- ==================================================
+         TOP MAIN NAVIGATION HEADER
+    ================================================== -->
+    <header class="navbar-wrapper">
+        <nav class="main-navigation">
+            <div class="nav-logo">
+                <div class="logo-icon-bg">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <span class="logo-text">RepoHealth <span class="logo-highlight">AI</span></span>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-button active" onclick="showSection('analysisSection', this)" id="navBtnAnalysis">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Repository Analysis</span>
+                </button>
+
+                <button class="nav-button" onclick="showSection('explainSection', this)" id="navBtnExplain">
+                    <i class="fa-solid fa-fire-flame-curved text-fire"></i>
+                    <span>Explainable AI</span>
+                </button>
+
+                <button class="nav-button" onclick="showSection('comparisonSection', this)" id="navBtnCompare">
+                    <i class="fa-solid fa-scale-balanced text-balance"></i>
+                    <span>Repository Comparison</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="content-wrapper">
+
+        <!-- ==================================================
+             SECTION 1: REPOSITORY ANALYSIS
+        ================================================== -->
+        <section id="analysisSection" class="page-section active-section">
+            <div class="main-container">
+                
+                <!-- Hero Header -->
+                <div class="hero-section">
+                    <div class="hero-badge">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>AI-Powered Repository Intelligence</span>
+                    </div>
+                    <h1>Repository Health & Sustainability</h1>
+                    <p class="hero-subtitle">
+                        Evaluate codebase stability, contributor engagement, and long-term viability of any public GitHub repository using advanced Machine Learning.
+                    </p>
+                </div>
+
+                <!-- Repository Input Search Bar -->
+                <div class="analysis-card search-card">
+                    <div class="card-header-icon">
+                        <i class="fa-brands fa-github"></i>
+                    </div>
+                    <h2>Analyze GitHub Repository</h2>
+                    <p class="description">
+                        Enter a public GitHub repository URL to generate a comprehensive health report.
+                    </p>
+
+                    <div class="repository-input">
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-link input-icon"></i>
+                            <input type="text" id="repositoryUrl" placeholder="https://github.com/pallets/flask" autocomplete="off" spellcheck="false">
+                        </div>
+                        <button class="btn-primary" onclick="analyzeRepository()">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Analyze Repository</span>
+                        </button>
+                    </div>
+
+                    <!-- Preset Quick Suggestion Pills -->
+                    <div class="quick-presets">
+                        <span class="preset-label">Try popular repos:</span>
+                        <button class="preset-pill" onclick="document.getElementById('repositoryUrl').value='https://github.com/pallets/flask'; analyzeRepository();">pallets/flask</button>
+                        <button class="preset-pill" onclick="document.getElementById('repositoryUrl').value='https://github.com/fastapi/fastapi'; analyzeRepository();">fastapi/fastapi</button>
+                        <button class="preset-pill" onclick="document.getElementById('repositoryUrl').value='https://github.com/vuejs/core'; analyzeRepository();">vuejs/core</button>
+                    </div>
+                </div>
+
+                <!-- Loading State Box -->
+                <div id="analysisLoading" class="loading-box" style="display: none;">
+                    <div class="spinner-ring"></div>
+                    <p class="loading-title">Analyzing Repository Health...</p>
+                    <p class="loading-subtext">Fetching GitHub metrics, calculating activity indices, and querying predictive models.</p>
+                </div>
+
+                <!-- Error Display Box -->
+                <div id="analysisError" class="error-message" style="display: none;">
+                    <div class="error-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                    <p id="analysisErrorText">Analysis failed.</p>
+                </div>
+
+                <!-- Analysis Results Dashboard Container -->
+                <div id="analysisResult" class="results-container" style="display: none;">
+
+                    <!-- Top Overview Cards Grid -->
+                    <div class="overview-grid">
+                        
+                        <!-- Health Result Card -->
+                        <div class="result-card health-card">
+                            <div class="card-top">
+                                <span class="card-badge"><i class="fa-solid fa-shield-heart"></i> Health Status</span>
+                                <span class="card-meta">ML Prediction</span>
+                            </div>
+                            <div class="health-result">
+                                <div id="healthStatus" class="health-status">-</div>
+                                <div class="confidence-container">
+                                    <span class="confidence-label">Model Confidence</span>
+                                    <span id="healthConfidence" class="confidence-val">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sustainability Result Card -->
+                        <div class="result-card sustainability-card">
+                            <div class="card-top">
+                                <span class="card-badge"><i class="fa-solid fa-leaf"></i> Sustainability Score</span>
+                                <span class="card-meta">Viability Metric</span>
+                            </div>
+                            <div class="sustainability-result">
+                                <div id="sustainabilityScore" class="sustainability-score">-</div>
+                                <div class="category-container">
+                                    <span class="category-label">Category Index</span>
+                                    <span id="sustainabilityCategory" class="category-val">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Repository Information Grid -->
+                    <div class="result-card metrics-card">
+                        <div class="metrics-header">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Core Repository Metrics</h3>
+                            <span class="repo-badge-label" id="repoDisplayBadge">Repository Metadata</span>
+                        </div>
+
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <div class="item-icon"><i class="fa-solid fa-folder-git"></i></div>
+                                <div class="item-content">
+                                    <span>Repository</span>
+                                    <strong id="repositoryName">-</strong>
+                                </div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="item-icon icon-star"><i class="fa-solid fa-star"></i></div>
+                                <div class="item-content">
+                                    <span>Stars</span>
+                                    <strong id="repositoryStars">-</strong>
+                                </div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="item-icon icon-fork"><i class="fa-solid fa-code-fork"></i></div>
+                                <div class="item-content">
+                                    <span>Forks</span>
+                                    <strong id="repositoryForks">-</strong>
+                                </div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="item-icon icon-issue"><i class="fa-solid fa-circle-dot"></i></div>
+                                <div class="item-content">
+                                    <span>Open Issues</span>
+                                    <strong id="repositoryIssues">-</strong>
+                                </div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="item-icon icon-people"><i class="fa-solid fa-users"></i></div>
+                                <div class="item-content">
+                                    <span>Contributors</span>
+                                    <strong id="repositoryContributors">-</strong>
+                                </div>
+                            </div>
+
+                            <div class="result-item">
+                                <div class="item-icon icon-commit"><i class="fa-solid fa-code-commit"></i></div>
+                                <div class="item-content">
+                                    <span>Total Commits</span>
+                                    <strong id="repositoryCommits">-</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Embedded 🔥 Explainable AI Breakdown Section -->
+                    <div id="analysisExplainContainer" class="embedded-xai-wrapper" style="display: none;"></div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ==================================================
+             SECTION 2: EXPLAINABLE AI
+        ================================================== -->
+        <section id="explainSection" class="page-section">
+            <div class="feature-page">
+                <div class="feature-page-header">
+                    <div class="hero-badge badge-fire">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                        <span>Model Interpretability</span>
+                    </div>
+                    <h1>Explainable AI Analysis</h1>
+                    <p class="feature-subtitle">
+                        Discover the exact underlying metric drivers, strengths, risk factors, and actionable recommendations generated by our Explainable AI engine.
+                    </p>
+                </div>
+
+                <div class="feature-input-card">
+                    <div class="feature-input">
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                            <input type="text" id="explainRepoUrl" placeholder="https://github.com/pallets/flask" autocomplete="off" spellcheck="false">
+                        </div>
+                        <button class="btn-primary btn-fire" onclick="runExplainableAI()">
+                            <i class="fa-solid fa-brain"></i>
+                            <span>Explain Prediction</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="explainResult" class="feature-result">
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                        <h3>Ready for Explainable Analysis</h3>
+                        <p>Enter a public GitHub repository URL above to generate deep model feature attributions and recommendations.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================================================
+             SECTION 3: REPOSITORY COMPARISON
+        ================================================== -->
+        <section id="comparisonSection" class="page-section">
+            <div class="feature-page">
+                <div class="feature-page-header">
+                    <div class="hero-badge badge-balance">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                        <span>Benchmarking Tool</span>
+                    </div>
+                    <h1>Repository Comparison</h1>
+                    <p class="feature-subtitle">
+                        Perform a side-by-side comparative health audit between two GitHub projects to compare community adoption, velocity, and maintainability.
+                    </p>
+                </div>
+
+                <div class="comparison-card">
+                    <div class="comparison-inputs">
+                        <div class="repo-input-group">
+                            <label for="repoA">
+                                <i class="fa-solid fa-square-a text-blue"></i>
+                                <span>Repository A</span>
+                            </label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-link input-icon"></i>
+                                <input type="text" id="repoA" placeholder="https://github.com/pallets/flask" autocomplete="off" spellcheck="false">
+                            </div>
+                        </div>
+
+                        <div class="comparison-vs">VS</div>
+
+                        <div class="repo-input-group">
+                            <label for="repoB">
+                                <i class="fa-solid fa-square-b text-purple"></i>
+                                <span>Repository B</span>
+                            </label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-link input-icon"></i>
+                                <input type="text" id="repoB" placeholder="https://github.com/fastapi/fastapi" autocomplete="off" spellcheck="false">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary comparison-button" onclick="compareRepositories()">
+                        <i class="fa-solid fa-code-compare"></i>
+                        <span>Compare Repositories</span>
+                    </button>
+                </div>
+
+                <div id="comparisonResult" class="feature-result">
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-balance-scale"></i></div>
+                        <h3>Ready for Benchmark</h3>
+                        <p>Enter URLs for two GitHub repositories to calculate winner metrics and side-by-side feature breakdowns.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p><i class="fa-solid fa-heart-pulse"></i> <strong>RepoHealth AI</strong> &bull; Machine Learning Powered Open-Source Repository Intelligence</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Script -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
