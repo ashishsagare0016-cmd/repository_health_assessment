@@ -1,335 +1,664 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RepoHealth AI - Smart GitHub Repository Assessment</title>
-    <meta name="description" content="Analyze, compare, and explain GitHub repository health, sustainability, and development metrics using Machine Learning.">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepoHealth AI — Intelligent Repository Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
-
 <body>
 
-    <!-- ==================================================
-         TOP MAIN NAVIGATION HEADER
-    ================================================== -->
-    <header class="navbar-wrapper">
-        <nav class="main-navigation">
-            <div class="nav-logo">
-                <div class="logo-icon-bg">
-                    <i class="fa-solid fa-heart-pulse"></i>
-                </div>
-                <span class="logo-text">RepoHealth <span class="logo-highlight">AI</span></span>
-            </div>
+<!-- ═══════════════════════════════════════ AMBIENT CANVAS ══ -->
+<canvas id="ambientCanvas"></canvas>
 
-            <div class="nav-buttons">
-                <button class="nav-button active" onclick="showSection('analysisSection', this)" id="navBtnAnalysis">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Repository Analysis</span>
-                </button>
+<!-- ═══════════════════════════════════════ SIDEBAR ════════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="14" stroke="url(#brandGrad)" stroke-width="2"/>
+        <path d="M10 20 L16 10 L22 20" stroke="url(#brandGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 17 L20 17" stroke="url(#brandGrad)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="16" cy="10" r="2" fill="url(#brandGrad)"/>
+        <defs>
+          <linearGradient id="brandGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/>
+            <stop offset="1" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">RepoHealth</span>
+      <span class="brand-sub">AI Intelligence</span>
+    </div>
+  </div>
 
-                <button class="nav-button" onclick="showSection('explainSection', this)" id="navBtnExplain">
-                    <i class="fa-solid fa-fire-flame-curved text-fire"></i>
-                    <span>Explainable AI</span>
-                </button>
+  <div class="sidebar-status">
+    <span class="status-dot"></span>
+    <span class="status-label">ML Engine Online</span>
+    <span class="status-version">v2.4</span>
+  </div>
 
-                <button class="nav-button" onclick="showSection('comparisonSection', this)" id="navBtnCompare">
-                    <i class="fa-solid fa-scale-balanced text-balance"></i>
-                    <span>Repository Comparison</span>
-                </button>
-            </div>
-        </nav>
-    </header>
+  <div class="nav-section">
+    <span class="nav-label">CORE MODULES</span>
+    <a class="nav-item active" data-section="dashboard" href="#" onclick="navigate('dashboard',this)">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/></svg>
+      <span>Dashboard</span>
+      <span class="nav-badge">Home</span>
+    </a>
+    <a class="nav-item" data-section="audit" href="#" onclick="navigate('audit',this)">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z" clip-rule="evenodd"/></svg>
+      <span>Health Audit</span>
+      <span class="nav-badge live-badge">LIVE</span>
+    </a>
+    <a class="nav-item" data-section="xai" href="#" onclick="navigate('xai',this)">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>
+      <span>Explainable AI</span>
+      <span class="nav-badge">XAI</span>
+    </a>
+    <a class="nav-item" data-section="compare" href="#" onclick="navigate('compare',this)">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"/></svg>
+      <span>Compare Repos</span>
+    </a>
+    <a class="nav-item" data-section="sandbox" href="#" onclick="navigate('sandbox',this)">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+      <span>Sandbox Sim</span>
+    </a>
+  </div>
 
-    <main class="content-wrapper">
+  <div class="nav-section">
+    <span class="nav-label">PRESENTATION</span>
+    <a class="nav-item" data-section="slides" href="#" onclick="navigate('slides',this)">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/></svg>
+      <span>Slide Deck</span>
+      <span class="nav-badge pro-badge">PRO</span>
+    </a>
+  </div>
 
-        <!-- ==================================================
-             SECTION 1: REPOSITORY ANALYSIS
-        ================================================== -->
-        <section id="analysisSection" class="page-section active-section">
-            <div class="main-container">
-                
-                <!-- Hero Header -->
-                <div class="hero-section">
-                    <div class="hero-badge">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>AI-Powered Repository Intelligence</span>
-                    </div>
-                    <h1>Repository Health & Sustainability</h1>
-                    <p class="hero-subtitle">
-                        Evaluate codebase stability, contributor engagement, and long-term viability of any public GitHub repository using advanced Machine Learning.
-                    </p>
-                </div>
+  <div class="sidebar-footer">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+      <svg id="themeIcon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+      <span id="themeLabel">Light Mode</span>
+    </button>
+    <button class="export-btn" onclick="exportPDF()">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd"/></svg>
+      Export PDF
+    </button>
+  </div>
+</nav>
 
-                <!-- Repository Input Search Bar -->
-                <div class="analysis-card search-card">
-                    <div class="card-header-icon">
-                        <i class="fa-brands fa-github"></i>
-                    </div>
-                    <h2>Analyze GitHub Repository</h2>
-                    <p class="description">
-                        Enter a public GitHub repository URL to generate a comprehensive health report.
-                    </p>
+<!-- ═══════════════════════════════════════ TOPBAR ══════════════ -->
+<header class="topbar">
+  <button class="hamburger" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-center">
+    <div class="topbar-search">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+      <input type="text" placeholder="Quick analyze: paste any GitHub URL…" id="quickSearchInput" onkeydown="if(event.key==='Enter') quickAnalyze()" />
+      <kbd>↵</kbd>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <div class="top-badge-group">
+      <span class="top-chip chip-indigo">ML v2.4</span>
+      <span class="top-chip chip-cyan">95.2% Acc</span>
+    </div>
+    <button class="btn-keynote" onclick="navigate('slides', document.querySelector('[data-section=slides]'))">🎬 Keynote</button>
+  </div>
+</header>
 
-                    <div class="repository-input">
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-link input-icon"></i>
-                            <input type="text" id="repositoryUrl" placeholder="https://github.com/pallets/flask" autocomplete="off" spellcheck="false">
-                        </div>
-                        <button class="btn-primary" onclick="analyzeRepository()">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span>Analyze Repository</span>
-                        </button>
-                    </div>
+<!-- ═══════════════════════════════════════ MAIN CONTENT ════════ -->
+<main class="main-content" id="mainContent">
 
-                    <!-- Preset Quick Suggestion Pills -->
-                    <div class="quick-presets">
-                        <span class="preset-label">Try popular repos:</span>
-                        <button class="preset-pill" onclick="document.getElementById('repositoryUrl').value='https://github.com/pallets/flask'; analyzeRepository();">pallets/flask</button>
-                        <button class="preset-pill" onclick="document.getElementById('repositoryUrl').value='https://github.com/fastapi/fastapi'; analyzeRepository();">fastapi/fastapi</button>
-                        <button class="preset-pill" onclick="document.getElementById('repositoryUrl').value='https://github.com/vuejs/core'; analyzeRepository();">vuejs/core</button>
-                    </div>
-                </div>
+  <!-- ─────────────────────────── DASHBOARD SECTION ─────────────── -->
+  <section id="sec-dashboard" class="section active">
 
-                <!-- Loading State Box -->
-                <div id="analysisLoading" class="loading-box" style="display: none;">
-                    <div class="spinner-ring"></div>
-                    <p class="loading-title">Analyzing Repository Health...</p>
-                    <p class="loading-subtext">Fetching GitHub metrics, calculating activity indices, and querying predictive models.</p>
-                </div>
-
-                <!-- Error Display Box -->
-                <div id="analysisError" class="error-message" style="display: none;">
-                    <div class="error-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
-                    <p id="analysisErrorText">Analysis failed.</p>
-                </div>
-
-                <!-- Analysis Results Dashboard Container -->
-                <div id="analysisResult" class="results-container" style="display: none;">
-
-                    <!-- Top Overview Cards Grid -->
-                    <div class="overview-grid">
-                        
-                        <!-- Health Result Card -->
-                        <div class="result-card health-card">
-                            <div class="card-top">
-                                <span class="card-badge"><i class="fa-solid fa-shield-heart"></i> Health Status</span>
-                                <span class="card-meta">ML Prediction</span>
-                            </div>
-                            <div class="health-result">
-                                <div id="healthStatus" class="health-status">-</div>
-                                <div class="confidence-container">
-                                    <span class="confidence-label">Model Confidence</span>
-                                    <span id="healthConfidence" class="confidence-val">-</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sustainability Result Card -->
-                        <div class="result-card sustainability-card">
-                            <div class="card-top">
-                                <span class="card-badge"><i class="fa-solid fa-leaf"></i> Sustainability Score</span>
-                                <span class="card-meta">Viability Metric</span>
-                            </div>
-                            <div class="sustainability-result">
-                                <div id="sustainabilityScore" class="sustainability-score">-</div>
-                                <div class="category-container">
-                                    <span class="category-label">Category Index</span>
-                                    <span id="sustainabilityCategory" class="category-val">-</span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Repository Information Grid -->
-                    <div class="result-card metrics-card">
-                        <div class="metrics-header">
-                            <h3><i class="fa-solid fa-chart-pie"></i> Core Repository Metrics</h3>
-                            <span class="repo-badge-label" id="repoDisplayBadge">Repository Metadata</span>
-                        </div>
-
-                        <div class="result-grid">
-                            <div class="result-item">
-                                <div class="item-icon"><i class="fa-solid fa-folder-git"></i></div>
-                                <div class="item-content">
-                                    <span>Repository</span>
-                                    <strong id="repositoryName">-</strong>
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="item-icon icon-star"><i class="fa-solid fa-star"></i></div>
-                                <div class="item-content">
-                                    <span>Stars</span>
-                                    <strong id="repositoryStars">-</strong>
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="item-icon icon-fork"><i class="fa-solid fa-code-fork"></i></div>
-                                <div class="item-content">
-                                    <span>Forks</span>
-                                    <strong id="repositoryForks">-</strong>
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="item-icon icon-issue"><i class="fa-solid fa-circle-dot"></i></div>
-                                <div class="item-content">
-                                    <span>Open Issues</span>
-                                    <strong id="repositoryIssues">-</strong>
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="item-icon icon-people"><i class="fa-solid fa-users"></i></div>
-                                <div class="item-content">
-                                    <span>Contributors</span>
-                                    <strong id="repositoryContributors">-</strong>
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="item-icon icon-commit"><i class="fa-solid fa-code-commit"></i></div>
-                                <div class="item-content">
-                                    <span>Total Commits</span>
-                                    <strong id="repositoryCommits">-</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Embedded 🔥 Explainable AI Breakdown Section -->
-                    <div id="analysisExplainContainer" class="embedded-xai-wrapper" style="display: none;"></div>
-
-                </div>
-
-            </div>
-        </section>
-
-
-        <!-- ==================================================
-             SECTION 2: EXPLAINABLE AI
-        ================================================== -->
-        <section id="explainSection" class="page-section">
-            <div class="feature-page">
-                <div class="feature-page-header">
-                    <div class="hero-badge badge-fire">
-                        <i class="fa-solid fa-fire-flame-curved"></i>
-                        <span>Model Interpretability</span>
-                    </div>
-                    <h1>Explainable AI Analysis</h1>
-                    <p class="feature-subtitle">
-                        Discover the exact underlying metric drivers, strengths, risk factors, and actionable recommendations generated by our Explainable AI engine.
-                    </p>
-                </div>
-
-                <div class="feature-input-card">
-                    <div class="feature-input">
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-magnifying-glass input-icon"></i>
-                            <input type="text" id="explainRepoUrl" placeholder="https://github.com/pallets/flask" autocomplete="off" spellcheck="false">
-                        </div>
-                        <button class="btn-primary btn-fire" onclick="runExplainableAI()">
-                            <i class="fa-solid fa-brain"></i>
-                            <span>Explain Prediction</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="explainResult" class="feature-result">
-                    <div class="empty-state">
-                        <div class="empty-icon"><i class="fa-solid fa-lightbulb"></i></div>
-                        <h3>Ready for Explainable Analysis</h3>
-                        <p>Enter a public GitHub repository URL above to generate deep model feature attributions and recommendations.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ==================================================
-             SECTION 3: REPOSITORY COMPARISON
-        ================================================== -->
-        <section id="comparisonSection" class="page-section">
-            <div class="feature-page">
-                <div class="feature-page-header">
-                    <div class="hero-badge badge-balance">
-                        <i class="fa-solid fa-scale-balanced"></i>
-                        <span>Benchmarking Tool</span>
-                    </div>
-                    <h1>Repository Comparison</h1>
-                    <p class="feature-subtitle">
-                        Perform a side-by-side comparative health audit between two GitHub projects to compare community adoption, velocity, and maintainability.
-                    </p>
-                </div>
-
-                <div class="comparison-card">
-                    <div class="comparison-inputs">
-                        <div class="repo-input-group">
-                            <label for="repoA">
-                                <i class="fa-solid fa-square-a text-blue"></i>
-                                <span>Repository A</span>
-                            </label>
-                            <div class="input-with-icon">
-                                <i class="fa-solid fa-link input-icon"></i>
-                                <input type="text" id="repoA" placeholder="https://github.com/pallets/flask" autocomplete="off" spellcheck="false">
-                            </div>
-                        </div>
-
-                        <div class="comparison-vs">VS</div>
-
-                        <div class="repo-input-group">
-                            <label for="repoB">
-                                <i class="fa-solid fa-square-b text-purple"></i>
-                                <span>Repository B</span>
-                            </label>
-                            <div class="input-with-icon">
-                                <i class="fa-solid fa-link input-icon"></i>
-                                <input type="text" id="repoB" placeholder="https://github.com/fastapi/fastapi" autocomplete="off" spellcheck="false">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="btn-primary comparison-button" onclick="compareRepositories()">
-                        <i class="fa-solid fa-code-compare"></i>
-                        <span>Compare Repositories</span>
-                    </button>
-                </div>
-
-                <div id="comparisonResult" class="feature-result">
-                    <div class="empty-state">
-                        <div class="empty-icon"><i class="fa-solid fa-balance-scale"></i></div>
-                        <h3>Ready for Benchmark</h3>
-                        <p>Enter URLs for two GitHub repositories to calculate winner metrics and side-by-side feature breakdowns.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="footer-content">
-            <p><i class="fa-solid fa-heart-pulse"></i> <strong>RepoHealth AI</strong> &bull; Machine Learning Powered Open-Source Repository Intelligence</p>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-mesh"></div>
+      <div class="hero-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot"></span>
+          AI-Powered · Open Source Intelligence · Real-Time Analysis
         </div>
-    </footer>
+        <h1 class="hero-title">
+          Repository <span class="gradient-word">Health</span><br/>
+          Assessment System
+        </h1>
+        <p class="hero-desc">
+          Analyze any GitHub repository with advanced machine learning — get instant health scores, sustainability ratings, explainable AI insights, and executive-ready reports.
+        </p>
+        <div class="hero-input-group">
+          <div class="hero-input-wrap">
+            <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            <input type="text" id="heroRepoInput" placeholder="https://github.com/owner/repository" class="hero-input" />
+          </div>
+          <button class="btn-hero-analyze" onclick="heroAnalyze()">
+            <span>Analyze Now</span>
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+        <div class="hero-chips">
+          <span class="chip-tag" onclick="setHeroInput('https://github.com/pallets/flask')">flask</span>
+          <span class="chip-tag" onclick="setHeroInput('https://github.com/tiangolo/fastapi')">fastapi</span>
+          <span class="chip-tag" onclick="setHeroInput('https://github.com/facebook/react')">react</span>
+          <span class="chip-tag" onclick="setHeroInput('https://github.com/pandas-dev/pandas')">pandas</span>
+          <span class="chip-tag" onclick="setHeroInput('https://github.com/numpy/numpy')">numpy</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="radar-ring r1"></div>
+        <div class="radar-ring r2"></div>
+        <div class="radar-ring r3"></div>
+        <div class="radar-sweep"></div>
+        <div class="radar-center">
+          <svg viewBox="0 0 64 64" width="48" height="48" fill="none">
+            <circle cx="32" cy="32" r="28" stroke="#6366f1" stroke-width="2" stroke-dasharray="4 4"/>
+            <path d="M20 40 L32 20 L44 40" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24 34 L40 34" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="32" cy="20" r="3" fill="#6366f1"/>
+          </svg>
+        </div>
+        <div class="radar-dot rd1"></div>
+        <div class="radar-dot rd2"></div>
+        <div class="radar-dot rd3"></div>
+      </div>
+    </div>
 
-    <!-- JavaScript Script -->
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- Hero Result Card (hidden until analyzed) -->
+    <div class="hero-result-card" id="heroResult" style="display:none">
+      <div class="result-header">
+        <div class="result-repo-info">
+          <h3 id="hrRepoName" class="result-repo-name">—</h3>
+          <span id="hrRepoUrl" class="result-repo-url"></span>
+        </div>
+        <div class="result-badges">
+          <span id="hrHealthBadge" class="health-badge">—</span>
+          <button class="btn-detail" onclick="navigate('audit', document.querySelector('[data-section=audit]'))">Full Audit →</button>
+        </div>
+      </div>
+      <div class="result-metrics">
+        <div class="metric-pill">
+          <span class="metric-pill-label">Health Score</span>
+          <span id="hrHealth" class="metric-pill-val val-health">—</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-pill-label">Confidence</span>
+          <span id="hrConfidence" class="metric-pill-val val-conf">—</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-pill-label">Sustainability</span>
+          <span id="hrSustainability" class="metric-pill-val val-sust">—</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-pill-label">Category</span>
+          <span id="hrCategory" class="metric-pill-val val-cat">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Row -->
+    <div class="stat-row">
+      <div class="stat-card" data-color="indigo">
+        <div class="stat-icon-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-val" id="totalAnalyzed">0</div>
+          <div class="stat-label">Repos Analyzed</div>
+        </div>
+        <div class="stat-trend up">+12%</div>
+      </div>
+      <div class="stat-card" data-color="cyan">
+        <div class="stat-icon-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-val">95.2%</div>
+          <div class="stat-label">ML Accuracy</div>
+        </div>
+        <div class="stat-trend up">+0.3%</div>
+      </div>
+      <div class="stat-card" data-color="emerald">
+        <div class="stat-icon-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-val">8</div>
+          <div class="stat-label">ML Features</div>
+        </div>
+        <div class="stat-trend">Core</div>
+      </div>
+      <div class="stat-card" data-color="amber">
+        <div class="stat-icon-wrap">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-val">3</div>
+          <div class="stat-label">Health Tiers</div>
+        </div>
+        <div class="stat-trend">Active</div>
+      </div>
+    </div>
+
+    <!-- Feature Cards Grid -->
+    <div class="features-grid">
+      <div class="feat-card feat-indigo" onclick="navigate('audit', document.querySelector('[data-section=audit]'))">
+        <div class="feat-glow"></div>
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <h3 class="feat-title">Live Health Audit</h3>
+        <p class="feat-desc">Real-time ML inference with confidence scores, health tiers, and sustainability metrics from 8 GitHub signals.</p>
+        <div class="feat-footer">
+          <span class="feat-tag">Random Forest · XGBoost</span>
+          <span class="feat-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="feat-card feat-cyan" onclick="navigate('xai', document.querySelector('[data-section=xai]'))">
+        <div class="feat-glow"></div>
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        <h3 class="feat-title">Explainable AI</h3>
+        <p class="feat-desc">SHAP-style attribution maps, feature impact rankings, and natural language reasoning for every prediction.</p>
+        <div class="feat-footer">
+          <span class="feat-tag">SHAP · LIME · Attribution</span>
+          <span class="feat-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="feat-card feat-emerald" onclick="navigate('compare', document.querySelector('[data-section=compare]'))">
+        <div class="feat-glow"></div>
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        </div>
+        <h3 class="feat-title">Arena Comparison</h3>
+        <p class="feat-desc">Head-to-head battle mode — compare any two repos across all health dimensions with winner declaration.</p>
+        <div class="feat-footer">
+          <span class="feat-tag">Multi-Metric · Side-by-Side</span>
+          <span class="feat-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="feat-card feat-amber" onclick="navigate('sandbox', document.querySelector('[data-section=sandbox]'))">
+        <div class="feat-glow"></div>
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        </div>
+        <h3 class="feat-title">Sandbox Simulator</h3>
+        <p class="feat-desc">Interactive parameter playground — tune stars, commits, issues, contributors in real-time and watch health shift.</p>
+        <div class="feat-footer">
+          <span class="feat-tag">Live Sliders · 5 Pillars</span>
+          <span class="feat-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terminal Stream -->
+    <div class="terminal-card">
+      <div class="terminal-titlebar">
+        <div class="term-dots">
+          <span class="td td-red"></span>
+          <span class="td td-yellow"></span>
+          <span class="td td-green"></span>
+        </div>
+        <span class="term-title">AI Inference Engine — Live Stream</span>
+        <span class="term-status-badge">● ACTIVE</span>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <div class="term-line"><span class="t-time">00:00:01</span><span class="t-sys">SYS</span><span class="t-text">Repository Health Assessment System v2.4 initialized</span></div>
+        <div class="term-line"><span class="t-time">00:00:02</span><span class="t-ml">ML</span><span class="t-text t-cyan">Loading Random Forest model → <span class="t-green">OK</span></span></div>
+        <div class="term-line"><span class="t-time">00:00:03</span><span class="t-ml">ML</span><span class="t-text t-cyan">Loading XGBoost ensemble → <span class="t-green">OK</span></span></div>
+        <div class="term-line"><span class="t-time">00:00:04</span><span class="t-api">API</span><span class="t-text">GitHub API gateway connected · Rate limit: 5000/hr</span></div>
+        <div class="term-line"><span class="t-time">00:00:05</span><span class="t-xai">XAI</span><span class="t-text t-purple">SHAP explainer loaded · Attribution engine ready</span></div>
+        <div class="term-line"><span class="t-time">00:00:06</span><span class="t-sys">SYS</span><span class="t-text t-green">All systems nominal — Awaiting repository URL input</span></div>
+        <div class="term-line blink-cursor"><span class="t-time">00:00:07</span><span class="t-sys">INP</span><span class="t-text">█</span></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ─────────────────────────── AUDIT SECTION ─────────────────── -->
+  <section id="sec-audit" class="section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <h2 class="section-title">Live Health Audit</h2>
+        <p class="section-sub">Real-time ML inference on any GitHub repository</p>
+      </div>
+      <div class="section-live-chip">
+        <span class="live-dot"></span> LIVE ML
+      </div>
+    </div>
+
+    <div class="audit-layout">
+      <!-- Input Panel -->
+      <div class="audit-input-panel panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          <span>Repository URL</span>
+        </div>
+        <input type="text" id="auditInput" class="panel-input" placeholder="https://github.com/owner/repo" />
+        <button class="btn-analyze" id="auditBtn" onclick="runAudit()">
+          <span id="auditBtnText">Run Full Audit</span>
+          <div class="btn-spinner" id="auditSpinner" style="display:none"></div>
+        </button>
+        <div class="quick-fill-grid">
+          <span class="qf-tag" onclick="setAuditInput('https://github.com/pallets/flask')">flask</span>
+          <span class="qf-tag" onclick="setAuditInput('https://github.com/tiangolo/fastapi')">fastapi</span>
+          <span class="qf-tag" onclick="setAuditInput('https://github.com/facebook/react')">react</span>
+          <span class="qf-tag" onclick="setAuditInput('https://github.com/vuejs/core')">vue</span>
+          <span class="qf-tag" onclick="setAuditInput('https://github.com/pandas-dev/pandas')">pandas</span>
+          <span class="qf-tag" onclick="setAuditInput('https://github.com/numpy/numpy')">numpy</span>
+        </div>
+        <div class="audit-error" id="auditError" style="display:none"></div>
+      </div>
+
+      <!-- Gauges Panel -->
+      <div class="gauges-panel panel">
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" class="gauge-track"/>
+            <circle cx="60" cy="60" r="50" class="gauge-fill gauge-fill-health" id="healthGaugeFill"
+              stroke-dasharray="314" stroke-dashoffset="314"
+              transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-val" id="healthGaugeVal">—</div>
+            <div class="gauge-lbl">Health</div>
+          </div>
+        </div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" class="gauge-track"/>
+            <circle cx="60" cy="60" r="50" class="gauge-fill gauge-fill-sust" id="sustGaugeFill"
+              stroke-dasharray="314" stroke-dashoffset="314"
+              transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-val" id="sustGaugeVal">—</div>
+            <div class="gauge-lbl">Sustainability</div>
+          </div>
+        </div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" class="gauge-track"/>
+            <circle cx="60" cy="60" r="50" class="gauge-fill gauge-fill-conf" id="confGaugeFill"
+              stroke-dasharray="314" stroke-dashoffset="314"
+              transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-val" id="confGaugeVal">—</div>
+            <div class="gauge-lbl">Confidence</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="audit-results" id="auditResults" style="display:none">
+      <div class="results-repo-card panel">
+        <div class="repo-meta">
+          <h3 id="auditRepoName" class="repo-name">—</h3>
+          <p id="auditRepoDesc" class="repo-desc">—</p>
+        </div>
+        <div class="repo-tags">
+          <span id="auditHealthBadge" class="repo-health-badge">—</span>
+          <span id="auditSustBadge" class="repo-sust-badge">—</span>
+        </div>
+      </div>
+
+      <div class="telemetry-grid">
+        <div class="tele-item"><div class="tele-label">Stars</div><div class="tele-val" id="tStars">—</div></div>
+        <div class="tele-item"><div class="tele-label">Forks</div><div class="tele-val" id="tForks">—</div></div>
+        <div class="tele-item"><div class="tele-label">Commits</div><div class="tele-val" id="tCommits">—</div></div>
+        <div class="tele-item"><div class="tele-label">Contributors</div><div class="tele-val" id="tContribs">—</div></div>
+        <div class="tele-item"><div class="tele-label">Open Issues</div><div class="tele-val" id="tIssues">—</div></div>
+        <div class="tele-item"><div class="tele-label">Age (days)</div><div class="tele-val" id="tAge">—</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── XAI SECTION ───────────────────── -->
+  <section id="sec-xai" class="section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <h2 class="section-title">Explainable AI</h2>
+        <p class="section-sub">Transparent reasoning and feature attribution for every prediction</p>
+      </div>
+      <span class="section-chip chip-purple">SHAP Attribution</span>
+    </div>
+
+    <div class="xai-input-row">
+      <input type="text" id="xaiInput" class="panel-input xai-inp" placeholder="https://github.com/owner/repo" />
+      <button class="btn-analyze btn-purple" id="xaiBtn" onclick="runXAI()">
+        <span id="xaiBtnText">Explain</span>
+        <div class="btn-spinner" id="xaiSpinner" style="display:none"></div>
+      </button>
+    </div>
+
+    <div class="xai-grid" id="xaiGrid" style="display:none">
+      <div class="xai-card panel" id="xaiActivity"></div>
+      <div class="xai-card panel" id="xaiStrengths"></div>
+      <div class="xai-card panel" id="xaiImprovements"></div>
+      <div class="xai-card panel full-width" id="xaiFeatures"></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── COMPARE SECTION ──────────────── -->
+  <section id="sec-compare" class="section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <h2 class="section-title">Arena Comparison</h2>
+        <p class="section-sub">Battle two repositories head-to-head across all health dimensions</p>
+      </div>
+      <span class="section-chip chip-emerald">VS Mode</span>
+    </div>
+
+    <div class="compare-input-row">
+      <div class="compare-input-block">
+        <label class="compare-label label-a">REPO A</label>
+        <input type="text" id="compareA" class="panel-input" placeholder="https://github.com/owner/repo-a" />
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="compare-input-block">
+        <label class="compare-label label-b">REPO B</label>
+        <input type="text" id="compareB" class="panel-input" placeholder="https://github.com/owner/repo-b" />
+      </div>
+    </div>
+    <div style="text-align:center; margin-bottom:2rem;">
+      <button class="btn-analyze" id="compareBtn" onclick="runCompare()">
+        <span id="compareBtnText">Compare Repositories</span>
+        <div class="btn-spinner" id="compareSpinner" style="display:none"></div>
+      </button>
+    </div>
+
+    <div class="compare-results" id="compareResults" style="display:none">
+      <div class="compare-winner-bar" id="compareWinner"></div>
+      <div class="compare-table-wrap panel">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th id="cNameA" class="th-a">Repo A</th>
+              <th id="cNameB" class="th-b">Repo B</th>
+            </tr>
+          </thead>
+          <tbody id="compareTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── SANDBOX SECTION ──────────────── -->
+  <section id="sec-sandbox" class="section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <h2 class="section-title">Sandbox Simulator</h2>
+        <p class="section-sub">Tune repository parameters and watch health scores update live</p>
+      </div>
+      <span class="section-chip chip-amber">Interactive</span>
+    </div>
+
+    <div class="sandbox-layout">
+      <div class="sliders-panel panel">
+        <div class="slider-group">
+          <label class="slider-label">Stars <span class="slider-chip chip-yellow" id="lStars">5000</span></label>
+          <input type="range" class="slider" id="sStars" min="0" max="100000" value="5000" oninput="updateSandbox()"/>
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">Forks <span class="slider-chip chip-yellow" id="lForks">500</span></label>
+          <input type="range" class="slider" id="sForks" min="0" max="20000" value="500" oninput="updateSandbox()"/>
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">Commits <span class="slider-chip chip-yellow" id="lCommits">1000</span></label>
+          <input type="range" class="slider" id="sCommits" min="0" max="50000" value="1000" oninput="updateSandbox()"/>
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">Contributors <span class="slider-chip chip-yellow" id="lContribs">20</span></label>
+          <input type="range" class="slider" id="sContribs" min="1" max="1000" value="20" oninput="updateSandbox()"/>
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">Open Issues <span class="slider-chip chip-yellow" id="lIssues">50</span></label>
+          <input type="range" class="slider" id="sIssues" min="0" max="5000" value="50" oninput="updateSandbox()"/>
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">Age (days) <span class="slider-chip chip-yellow" id="lAge">500</span></label>
+          <input type="range" class="slider" id="sAge" min="30" max="5000" value="500" oninput="updateSandbox()"/>
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">Has Wiki <span class="slider-chip chip-yellow" id="lWiki">Yes</span></label>
+          <input type="range" class="slider" id="sWiki" min="0" max="1" value="1" step="1" oninput="updateSandbox()"/>
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">Has License <span class="slider-chip chip-yellow" id="lLicense">Yes</span></label>
+          <input type="range" class="slider" id="sLicense" min="0" max="1" value="1" step="1" oninput="updateSandbox()"/>
+        </div>
+      </div>
+
+      <div class="sandbox-results-panel">
+        <div class="sandbox-score-card panel">
+          <div class="sandbox-score-header">Predicted Health</div>
+          <div class="sandbox-score-val" id="sbHealth">—</div>
+          <div class="sandbox-score-conf" id="sbConf">Confidence: —</div>
+        </div>
+
+        <div class="pillars-grid">
+          <div class="pillar-card panel" id="pillar-activity">
+            <div class="pillar-icon">📈</div>
+            <div class="pillar-name">Activity</div>
+            <div class="pillar-bar-wrap"><div class="pillar-bar" id="pbar-activity"></div></div>
+            <div class="pillar-score" id="pscore-activity">—</div>
+          </div>
+          <div class="pillar-card panel" id="pillar-community">
+            <div class="pillar-icon">👥</div>
+            <div class="pillar-name">Community</div>
+            <div class="pillar-bar-wrap"><div class="pillar-bar" id="pbar-community"></div></div>
+            <div class="pillar-score" id="pscore-community">—</div>
+          </div>
+          <div class="pillar-card panel" id="pillar-maintenance">
+            <div class="pillar-icon">🛠</div>
+            <div class="pillar-name">Maintenance</div>
+            <div class="pillar-bar-wrap"><div class="pillar-bar" id="pbar-maintenance"></div></div>
+            <div class="pillar-score" id="pscore-maintenance">—</div>
+          </div>
+          <div class="pillar-card panel" id="pillar-popularity">
+            <div class="pillar-icon">⭐</div>
+            <div class="pillar-name">Popularity</div>
+            <div class="pillar-bar-wrap"><div class="pillar-bar" id="pbar-popularity"></div></div>
+            <div class="pillar-score" id="pscore-popularity">—</div>
+          </div>
+          <div class="pillar-card panel" id="pillar-governance">
+            <div class="pillar-icon">📋</div>
+            <div class="pillar-name">Governance</div>
+            <div class="pillar-bar-wrap"><div class="pillar-bar" id="pbar-governance"></div></div>
+            <div class="pillar-score" id="pscore-governance">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── SLIDES SECTION ──────────────── -->
+  <section id="sec-slides" class="section">
+    <div class="section-header">
+      <div class="section-title-group">
+        <h2 class="section-title">Executive Slide Deck</h2>
+        <p class="section-sub">Presentation-ready analysis powered by your last audit</p>
+      </div>
+      <div class="slide-actions">
+        <button class="btn-slide-action" onclick="loadDemoSlide()">Load Demo</button>
+        <button class="btn-slide-action btn-primary-sm" onclick="exportPDF()">Export PDF</button>
+      </div>
+    </div>
+
+    <div class="slide-deck" id="slideDeck">
+      <div class="slide slide-1">
+        <div class="slide-eyebrow">REPOSITORY INTELLIGENCE REPORT</div>
+        <h2 class="slide-title" id="slideRepoName">Repository Health Assessment</h2>
+        <div class="slide-kpi-row">
+          <div class="slide-kpi">
+            <div class="kpi-val" id="slideHealth">—</div>
+            <div class="kpi-label">Health Score</div>
+          </div>
+          <div class="slide-kpi">
+            <div class="kpi-val" id="slideSust">—</div>
+            <div class="kpi-label">Sustainability</div>
+          </div>
+          <div class="slide-kpi">
+            <div class="kpi-val" id="slideConf">—</div>
+            <div class="kpi-label">Confidence</div>
+          </div>
+          <div class="slide-kpi">
+            <div class="kpi-val" id="slideCategory">—</div>
+            <div class="kpi-label">Category</div>
+          </div>
+        </div>
+        <div class="slide-divider"></div>
+        <div class="slide-swot">
+          <div class="swot-col swot-s">
+            <div class="swot-header swot-s-h">STRENGTHS</div>
+            <ul class="swot-list" id="slideStrengths"><li>Run an audit to populate</li></ul>
+          </div>
+          <div class="swot-col swot-w">
+            <div class="swot-header swot-w-h">IMPROVEMENTS</div>
+            <ul class="swot-list" id="slideImprovements"><li>Run an audit to populate</li></ul>
+          </div>
+          <div class="swot-col swot-o">
+            <div class="swot-header swot-o-h">RECOMMENDED</div>
+            <ul class="swot-list" id="slideRecommended"><li>Run an audit to populate</li></ul>
+          </div>
+        </div>
+        <div class="slide-footer-bar">
+          <span>RepoHealth AI v2.4</span>
+          <span>ML-Powered Open Source Intelligence</span>
+          <span id="slideDate"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <div class="loading-msg" id="loadingMsg">Fetching repository data…</div>
+    <div class="loading-steps" id="loadingSteps"></div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-
 </html>
